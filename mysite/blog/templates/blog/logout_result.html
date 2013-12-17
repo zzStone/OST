@@ -1,0 +1,12 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+{% if request.user.is_authenticated %}
+<h1>Logout does not succeed</h1>
+{% else %}
+<h1>You've been successfully logged out.</h1>
+{% endif %}
+<a href="{% url 'blog:index' %}">go to home page</a>
+
+{% endblock %}

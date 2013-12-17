@@ -1,0 +1,18 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+<h2>{{ username }}'s blogs</h2>
+{% if bloglist %}
+    <ul>
+    {% for blog in bloglist %}
+        <li><a href="{% url 'blog:blogs' blog.id 0 %}">{{ blog.name }}</a></li>
+    {% endfor %}
+    </ul>
+{% else %}
+    <p>No blogs are available.</p>
+{% endif %}
+
+<a href="{% url 'blog:addnewblog' %}">add a new blog</a>
+
+{% endblock %}

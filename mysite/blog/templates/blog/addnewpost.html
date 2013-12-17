@@ -1,0 +1,14 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+<h1>Add a new post</h1>
+<form action="{% url 'blog:addpost_result' %}" method="post" id="addpost">
+{% csrf_token %}
+<input type="text" name="title" /><br>
+<input type="hidden" name="bolgID" value="{{ blog_id }}"/><br>
+<textarea rows="4" cols="50" name="body" form="addpost"></textarea><br>
+<input type="submit" value="add" /><br>
+</form>
+
+{% endblock %}

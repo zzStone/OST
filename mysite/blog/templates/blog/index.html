@@ -1,0 +1,31 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+<h2>Most popular blogs</h2>
+{% if most_popular_blog %}
+    <ul>
+    {% for blog in most_popular_blog %}
+        <li><a href="{% url 'blog:blogs' blog.id 0 %}">{{ blog.name }}</a></li>
+    {% endfor %}
+    </ul>
+{% else %}
+    <p>No blogs are available.</p>
+{% endif %}
+
+<h2>Most popular posts</h2>
+{% if most_popular_post %}
+    <ul>
+    {% for post in most_popular_post %}
+        <li><a href="{% url 'blog:posts' post.id %}">{{ post.title }}</a></li>
+    {% endfor %}
+    </ul>
+{% else %}
+    <p>No posts are available.</p>
+{% endif %}
+
+<!-- add new blog -->
+
+<!-- <a href="{% url 'blog:addnewblog' %}">add a new blog</a><br> -->
+
+{% endblock %}

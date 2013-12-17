@@ -1,0 +1,12 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+<h1>Add a new blog</h1>
+<form action="{% url 'blog:addblog_result' %}" method="post">
+{% csrf_token %}
+<input type="text" name="blogname" />
+<input type="submit" value="add" />
+</form>
+
+{% endblock %}

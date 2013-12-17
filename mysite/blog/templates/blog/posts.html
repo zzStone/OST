@@ -1,0 +1,16 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+<h2>{{ post.title }}</h2>
+<a href="{% url 'blog:addnewtag' post.id %}">add a new tag</a>
+<h3>tags of this post:</h3>
+{% for tag in post.tag_set.all %}
+    <a href="{% url 'blog:tags' tag.id %}">{{ tag.name }}</a>&nbsp;&nbsp;
+{% endfor %}
+<h3>body of this post:</h3>
+<p>{{ post.body }}</p>
+
+<a href="{% url 'blog:rmpost' post.id %}">remvoe this post</a>
+
+{% endblock %}

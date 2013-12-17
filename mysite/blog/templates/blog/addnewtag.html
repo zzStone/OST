@@ -1,0 +1,13 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+<h1>Add a new tag</h1>
+<form action="{% url 'blog:addtag_result' post_id %}" method="post" >
+{% csrf_token %}
+<input type="text" name="name" /><br>
+<input type="hidden" name="postID" value="{{ post_id }}"/><br>
+<input type="submit" value="add" /><br>
+</form>
+
+{% endblock %}

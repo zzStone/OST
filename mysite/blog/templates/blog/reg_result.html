@@ -1,0 +1,15 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+<h1>Register Result</h1>
+
+{% if message != "success" %}
+<p><strong>{{ message }}</strong></p>
+<p><a href="{% url 'blog:register' %}">Register Page</a></p>
+{% else %}
+<p><strong>You've successfully registered.  Please Login.</strong></p>
+<p><a href="{% url 'blog:login' %}">Login Page</a></p>
+{% endif %}
+
+{% endblock %}

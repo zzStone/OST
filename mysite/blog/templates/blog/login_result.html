@@ -1,0 +1,14 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+{% if error_message %}
+<p><strong>{{ error_message }}</strong></p>
+<a href="{% url 'blog:login' %}">Please re-login.</a>
+{% else %} 
+<h1>You've been already logged in.</h1><br>
+<a href="{% url 'blog:logout' %}">logout</a><br>
+<a href="{% url 'blog:index' %}">go to home page</a><br>
+{% endif %}
+
+{% endblock %}
