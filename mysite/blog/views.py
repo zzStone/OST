@@ -8,6 +8,8 @@ from django.contrib.auth.models import User
 
 from blog.models import Blog, Post, Tag, Comments
 from django.utils import timezone
+import re
+from xml.sax.saxutils import unescape
 
 def index(request):
     most_popular_blog = Blog.objects.order_by('-view_track')[:5]
@@ -162,6 +164,8 @@ def addnewpost(request, blog_id):
 def addpost_result(request):
     title = request.POST['title']
     body = request.POST['body']
+    body = re.sub(r'(http://\S+)', r'<a href="\1">\1</a>', body)
+    body = re.sub(r'(https://\S+)', r'<a href="\1">\1</a>', body)
     blogID = request.POST['blogID']
     b = Blog.objects.get(pk = blogID)
     p = b.post_set.create(title=title, body=body, pub_date=timezone.now(), mod_date=timezone.now(), view_track=0)
@@ -200,18 +204,23 @@ def rmtag(request, tag_id):
 def editpost(request, post_id):
     p = Post.objects.get(id = post_id)
     blog_id = p.blog.id
+    body = str(p.body)
+    body = re.sub(r'<a href="(http://\S+)"\S+</a>', r'\1', body)
+    body = re.sub(r'<a href="(https://\S+)"\S+</a>', r'\1', body)
     if request.user.id == p.blog.user.id:
-        return render(request, 'blog/editpost.html', {'post': p})
+        return render(request, 'blog/editpost.html', {'post': p, 'body': body})
     else:
         return HttpResponse("You are not the author of the post.  Please go back and modify your own blog.")
 
 def editpost_result(request):
     title = request.POST['title']
     body = request.POST['body']
+    body = re.sub(r'(http://\S+)', r'<a href="\1">\1</a>', body)
+    body = re.sub(r'(https://\S+)', r'<a href="\1">\1</a>', body)
     postID = request.POST['postID']
     p = Post.objects.get(pk = postID)
     p.mod_date = timezone.now()
     p.title = title
-    p.body = p.body
+    p.body = body
     p.save()
     return render(request, 'blog/editpost_result.html', {'post': p})

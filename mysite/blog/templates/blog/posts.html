@@ -20,7 +20,7 @@
 
 {% if post.body %}
 <h3>body of this post:</h3>
-<p>{{ post.body }}</p>
+{{ post.body|safe|linebreaks }}
 {% else %}
     <p>Body is null.</p>
 {% endif %}

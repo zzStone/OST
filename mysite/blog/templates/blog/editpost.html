@@ -6,8 +6,8 @@
 <form action="{% url 'blog:editpost_result' %}" method="post" id="editpost">
 {% csrf_token %}
 <input type="text" name="title" value="{{ post.title }}" /><br>
-<input type="hidden" name="postID" value="{{ p.id }}"/><br>
-<textarea rows="4" cols="50" name="body" value="{{ post.body }}" form="editpost"></textarea><br>
+<input type="hidden" name="postID" value="{{ post.id }}"/><br>
+<textarea rows="4" cols="50" name="body" form="editpost">{{ body }}</textarea><br><br>
 <input type="submit" value="edit" /><br>
 </form>
 

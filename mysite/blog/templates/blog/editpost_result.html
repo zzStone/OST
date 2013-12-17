@@ -2,8 +2,9 @@
 
 {% block content %}
 
-<h1>You've edited the post!</h1>
+<h2>You've edited the post!</h2>
 
-<a href="{% url 'blog:posts' post_id %}">Go back to the post</a>
+<!-- <a href="{% url 'blog:index' %}">Home</a> -->
+<li><a href="{% url 'blog:posts' post.id %}">Go to the post</a></li>
 
 {% endblock %}
