@@ -3,12 +3,13 @@
 {% block content %}
 
 {% if error_message %}
-<p><strong>{{ error_message }}</strong></p>
+<h2><strong>{{ error_message }}</strong></h2>
 <a href="{% url 'blog:login' %}">Please re-login.</a>
 {% else %} 
-<h1>You've been already logged in.</h1><br>
+<h2>You've been already logged in, {{ username }}</h2><br>
 <a href="{% url 'blog:logout' %}">logout</a><br>
 <a href="{% url 'blog:index' %}">go to home page</a><br>
+<a href="{% url 'blog:myblogs' %}">go to myblogs</a><br>
 {% endif %}
 
 {% endblock %}

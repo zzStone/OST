@@ -2,11 +2,11 @@
 
 {% block content %}
 
-<h1>Register</h1>
+<h2>Register</h2>
 <form action="{% url 'blog:reg_result' %}" method="post">
 {% csrf_token %}
-<input type="text" name="username" />
-<input type="password" name="password" /><br />
+Username:  <input type="text" name="username"></input><br><br>
+Password:  <input type="password" name="password"></input><br /><br>
 <input type="submit" value="register" />
 </form>
 

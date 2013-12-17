@@ -16,6 +16,7 @@ class Post(models.Model):
     title = models.CharField(max_length=200)
     body = models.TextField()
     pub_date = models.DateTimeField('date published')
+    mod_date = models.DateTimeField('date modified')
     view_track = models.IntegerField(default=0)
     def __unicode__(self):  # Python 3: def __str__(self):
         return self.title
@@ -25,3 +26,11 @@ class Tag(models.Model):
     name = models.CharField(max_length=200)
     def __unicode__(self):  # Python 3: def __str__(self):
         return self.name
+
+class Comments(models.Model):
+    post = models.ForeignKey(Post)
+    editor = models.CharField(max_length=200)
+    body = models.TextField()
+    pub_date = models.DateTimeField('date published')
+    def __unicode__(self):  # Python 3: def __str__(self):
+        return self.pub_date

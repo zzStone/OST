@@ -2,10 +2,10 @@
 
 {% block content %}
 
-<h1>Add a new blog</h1>
+<h2>Add a new blog</h2>
 <form action="{% url 'blog:addblog_result' %}" method="post">
 {% csrf_token %}
-<input type="text" name="blogname" />
+Blog Name:  <input type="text" name="blogname" /><br><br>
 <input type="submit" value="add" />
 </form>
 

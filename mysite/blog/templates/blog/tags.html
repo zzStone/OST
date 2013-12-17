@@ -2,8 +2,35 @@
 
 {% block content %}
 
-<h2>{{ tag.name }}</h2>
+<h2>{{ the_tag.name }}</h2>
 
-<a href="{% url 'blog:rmtag' tag.id %}">remvoe this tag</a>
+<a href="{% url 'blog:rmtag' the_tag.id %}">remvoe this tag from the blog</a><br><br>
+
+<h3>Posts with this tag:</h3>
+{% if postlist %}
+<ul>
+{% for post in postlist %}
+    <li>
+    	<h3>{{ post.title }}</h3>
+    	<p>Post Body:&nbsp;&nbsp;&nbsp;&nbsp;{{ post.body|slice:":500" }}<a href="{% url 'blog:posts' post.id %}">...more details</a></p>
+    </li><br>
+{% endfor %}
+</ul>
+{% else %}
+    <p>No posts are available.</p>
+{% endif %}
+
+{% if num_pages == 0 %}
+{% else %}
+{% if page_id == 0 %}
+<a href="{% url 'blog:tags' the_tag.id next %}">next</a><br>
+{% else %}
+{% if page_id == num_pages %}
+<a href="{% url 'blog:tags' the_tag.id prev %}">prev</a><br>
+{% else %}
+<a href="{% url 'blog:tags' the_tag.id prev %}">prev</a>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a href="{% url 'blog:tags' the_tag.id next %}">next</a>
+{% endif %}
+{% endif %}
+{% endif %}
 
 {% endblock %}

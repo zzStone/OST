@@ -3,14 +3,26 @@
 {% block content %}
 
 <h2>{{ post.title }}</h2>
-<a href="{% url 'blog:addnewtag' post.id %}">add a new tag</a>
+<p>This post has been viewed {{ post.view_track }} times.</p>
+<a href="{% url 'blog:blogs' post.blog.id 0 %}">Return to the blog</a>&nbsp;&nbsp;&nbsp;&nbsp;
+<a href="{% url 'blog:addnewtag' post.id %}">Add a new tag</a>&nbsp;&nbsp;&nbsp;&nbsp;
+<a href="{% url 'blog:editpost' post.id %}">Edit this post</a>&nbsp;&nbsp;&nbsp;&nbsp;
+<a href="{% url 'blog:rmpost' post.id %}">Remvoe this post</a>&nbsp;&nbsp;&nbsp;&nbsp;
+
 <h3>tags of this post:</h3>
+{% if post.tag_set.all %}
 {% for tag in post.tag_set.all %}
-    <a href="{% url 'blog:tags' tag.id %}">{{ tag.name }}</a>&nbsp;&nbsp;
+    <a href="{% url 'blog:tags' tag.id 0 %}">{{ tag.name }}</a>&nbsp;&nbsp;
 {% endfor %}
+{% else %}
+    <p>No tags are available.</p>
+{% endif %}
+
+{% if post.body %}
 <h3>body of this post:</h3>
 <p>{{ post.body }}</p>
-
-<a href="{% url 'blog:rmpost' post.id %}">remvoe this post</a>
+{% else %}
+    <p>Body is null.</p>
+{% endif %}
 
 {% endblock %}

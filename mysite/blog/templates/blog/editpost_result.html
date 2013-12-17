@@ -1,0 +1,9 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+<h1>You've edited the post!</h1>
+
+<a href="{% url 'blog:posts' post_id %}">Go back to the post</a>
+
+{% endblock %}

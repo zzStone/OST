@@ -2,19 +2,39 @@
 
 {% block content %}
 
-<h2>Blog --- {{ blog.name }}</h2><a href="{% url 'blog:addnewpost' blog.id %}">add a new post</a>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a href="{% url 'blog:rmblog' blog.id %}">remvoe this blog</a><br>
+<h2>Blog --- {{ blog.name }}</h2>
+<p>This blog has been viewed {{ blog.view_track }} times.</p>
+<a href="{% url 'blog:addnewpost' blog.id %}">add a new post</a>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a href="{% url 'blog:rmblog' blog.id %}">remvoe this blog</a><br>
 
 <h3>Posts in this blog:</h3>
+{% if postlist %}
 <ul>
 {% for post in postlist %}
-    <li><h3>{{ post.title }}</h3>{{ post.body|slice:":500" }}<a href="{% url 'blog:posts' post.id %}">...more</a></li><br>
+    <li>
+    	<h3>{{ post.title }}</h3>
+    	<p>Post Body:&nbsp;&nbsp;&nbsp;&nbsp;{{ post.body|slice:":500" }}<a href="{% url 'blog:posts' post.id %}">...more details</a></p>
+    </li><br>
 {% endfor %}
 </ul>
-
+{% else %}
+    <p>No posts are available.</p>
+{% endif %}
 
 <!-- <a href="{% url 'blog:addnewpost' blog.id %}">add a new post</a><br>
 <a href="{% url 'blog:rmblog' blog.id %}">remvoe this blog</a><br> -->
 
+<!-- {% if page_id == 0 %}
+<a href="{% url 'blog:blogs' blog.id next %}">next</a><br>
+{% else %}
+{% if page_id == num_pages %}
+<a href="{% url 'blog:blogs' blog.id prev %}">prev</a><br>
+{% else %}
+<a href="{% url 'blog:blogs' blog.id prev %}">prev</a>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a href="{% url 'blog:blogs' blog.id next %}">next</a>
+{% endif %}
+{% endif %} -->
+
+{% if num_pages == 0 %}
+{% else %}
 {% if page_id == 0 %}
 <a href="{% url 'blog:blogs' blog.id next %}">next</a><br>
 {% else %}
@@ -22,6 +42,7 @@
 <a href="{% url 'blog:blogs' blog.id prev %}">prev</a><br>
 {% else %}
 <a href="{% url 'blog:blogs' blog.id prev %}">prev</a>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a href="{% url 'blog:blogs' blog.id next %}">next</a>
+{% endif %}
 {% endif %}
 {% endif %}
 

@@ -5,8 +5,8 @@
 {% if request.user.is_authenticated %}
 <h1>Logout does not succeed</h1>
 {% else %}
-<h1>You've been successfully logged out.</h1>
+<h2>You've been already logged out.</h2><br>
 {% endif %}
-<a href="{% url 'blog:index' %}">go to home page</a>
+<a href="{% url 'blog:login' %}">re-login</a>
 
 {% endblock %}

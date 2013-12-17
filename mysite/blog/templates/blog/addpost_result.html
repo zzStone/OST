@@ -2,8 +2,9 @@
 
 {% block content %}
 
-<h1>You've added a new post!</h1>
+<h2>You've added a new post!</h2>
 
-<a href="{% url 'blog:index'%}">home page</a>
+<!-- <a href="{% url 'blog:index' %}">Home</a> -->
+<li><a href="{% url 'blog:blogs' blog_id 0 %}">Go to the blog</a></li>
 
 {% endblock %}

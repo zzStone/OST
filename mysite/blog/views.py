@@ -6,7 +6,7 @@ from django.contrib.auth import authenticate, login as auth_login, logout as aut
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.models import User
 
-from blog.models import Blog, Post, Tag
+from blog.models import Blog, Post, Tag, Comments
 from django.utils import timezone
 
 def index(request):
@@ -42,7 +42,8 @@ def reg_result(request):
 
 def login(request):
     if request.user.is_authenticated():
-        return render(request, 'blog/login_result.html')
+        username = request.user.username
+        return render(request, 'blog/login_result.html', {'username': username})
     else:
         return render(request, 'blog/login.html')
 
@@ -53,13 +54,14 @@ def login_result(request):
     if user is not None:
         if user.is_active:
             auth_login(request, user)
-            return render(request, 'blog/login_result.html')
+            username = request.user.username
+            return render(request, 'blog/login_result.html', {'username': username})
         else:
-            return render(request, 'blog/login.html', {
+            return render(request, 'blog/login_result.html', {
             'error_message': "disabled account.",
             })
     else:
-        return render(request, 'blog/login.html', {
+        return render(request, 'blog/login_result.html', {
             'error_message': "Invalid login.",
         })
 
@@ -69,28 +71,58 @@ def logout(request):
     return HttpResponseRedirect(reverse('blog:logout_result'))
 
 def logout_result(request):
-    return render(request, 'blog/logout_result.html')
+    username = request.user.username
+    return render(request, 'blog/logout_result.html', {'username': username})
 
 def blogs(request, blog_id, page_id):
     blog = get_object_or_404(Blog, pk=blog_id)
+    blog.view_track += 1
+    blog.save()
     num_posts = blog.post_set.all().count()
-    num_pages = num_posts/10
+    if num_posts%10:
+        num_pages = num_posts/10
+    else:
+        num_pages = num_posts/10 - 1
     no = int(page_id)
     next = no + 1
     prev = no - 1
     if num_pages == no:
-        postlist = blog.post_set.all().order_by('-pub_date')[no*10:]
+        postlist = blog.post_set.all().order_by('-mod_date')[no*10:]
     else:
-        postlist = blog.post_set.all().order_by('-pub_date')[no*10:no*10+10]
-    return render(request, 'blog/blogs.html', {'blog':blog, 'postlist': postlist, 'page_id':no, 'next':next, 'prev':prev,'num_pages':num_pages})
+        postlist = blog.post_set.all().order_by('-mod_date')[no*10:no*10+10]
+    return render(request, 'blog/blogs.html', {'blog':blog, 'postlist': postlist, 'page_id':no, 'next':next, 'prev':prev,'num_pages':num_pages, 'num_posts': num_posts})
 
 def posts(request, post_id):
     post = get_object_or_404(Post, pk=post_id)
+    post.view_track += 1
+    post.save()
     return render(request, 'blog/posts.html', {'post': post})
 
-def tags(request, tag_id):
-    tag = get_object_or_404(Tag, pk=tag_id)
-    return render(request, 'blog/tags.html', {'tag': tag})
+def tags(request, tag_id, page_id):
+    the_tag = get_object_or_404(Tag, pk=tag_id)
+    taglist = Tag.objects.filter(name=the_tag.name)
+    allpostlist = []
+    for t in taglist:
+        allpostlist.append(t.post)
+    num_posts = len(allpostlist)
+    if num_posts%10:
+        num_pages = num_posts/10
+    else:
+        num_pages = num_posts/10 - 1
+    no = int(page_id)
+    next = no + 1
+    prev = no - 1
+    for i in range(0,len(allpostlist)):
+        for j in range(i,len(allpostlist)):
+            if allpostlist[i].mod_date < allpostlist[j].mod_date:
+                temp = allpostlist[i]
+                allpostlist[i] = allpostlist[j]
+                allpostlist[j] = temp
+    if num_pages == no:
+        postlist = allpostlist[no*10:]
+    else:
+        postlist = allpostlist[no*10:no*10+10]
+    return render(request, 'blog/tags.html', {'the_tag':the_tag, 'postlist': postlist, 'page_id':no, 'next':next, 'prev':prev,'num_pages':num_pages, 'num_posts': num_posts})
 
 def myblogs(request):
     if request.user.is_authenticated():
@@ -130,10 +162,10 @@ def addnewpost(request, blog_id):
 def addpost_result(request):
     title = request.POST['title']
     body = request.POST['body']
-    bolgID = request.POST['bolgID']
-    b = Blog.objects.get(pk = bolgID)
-    p = b.post_set.create(title=title, body=body, pub_date=timezone.now(), view_track=0)
-    return render(request, 'blog/addpost_result.html')
+    blogID = request.POST['blogID']
+    b = Blog.objects.get(pk = blogID)
+    p = b.post_set.create(title=title, body=body, pub_date=timezone.now(), mod_date=timezone.now(), view_track=0)
+    return render(request, 'blog/addpost_result.html', {'blog_id': blogID})
 
 def rmpost(request, post_id):
     p = Post.objects.get(id = post_id)
@@ -164,3 +196,22 @@ def rmtag(request, tag_id):
         return HttpResponse("This tag's been removed.  Please click back button.")
     else:
         return HttpResponse("You are not the owner of the post.  Please go back and modify your own blog.")
+
+def editpost(request, post_id):
+    p = Post.objects.get(id = post_id)
+    blog_id = p.blog.id
+    if request.user.id == p.blog.user.id:
+        return render(request, 'blog/editpost.html', {'post': p})
+    else:
+        return HttpResponse("You are not the author of the post.  Please go back and modify your own blog.")
+
+def editpost_result(request):
+    title = request.POST['title']
+    body = request.POST['body']
+    postID = request.POST['postID']
+    p = Post.objects.get(pk = postID)
+    p.mod_date = timezone.now()
+    p.title = title
+    p.body = p.body
+    p.save()
+    return render(request, 'blog/editpost_result.html', {'post': p})
