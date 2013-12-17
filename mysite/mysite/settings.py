@@ -37,6 +37,7 @@ INSTALLED_APPS = (
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'polls',
+    'blog',
 )
 
 MIDDLEWARE_CLASSES = (
@@ -59,9 +60,9 @@ WSGI_APPLICATION = 'mysite.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.mysql',
-        'NAME': 'test',               
-        'USER': 'bitchDa',  
-        'PASSWORD': 'hei',
+        'NAME': 'OST_final',               
+        'USER': 'zzStone',  
+        'PASSWORD': 'mypass',
         'HOST': '127.0.0.1', 
     }
 }
