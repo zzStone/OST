@@ -1,4 +1,5 @@
 from django.conf.urls import patterns, url
+from blog.rss import RssFeed
 
 urlpatterns = patterns('',
     url(r'^$', 'blog.views.index', name='index'),
@@ -25,9 +26,11 @@ urlpatterns = patterns('',
     url(r'^(?P<tag_id>\d+)/rmtag/$', 'blog.views.rmtag', name='rmtag'),
     url(r'^(?P<post_id>\d+)/editpost/$', 'blog.views.editpost', name='editpost'),
     url(r'^editpost_result/$', 'blog.views.editpost_result', name='editpost_result'),
+    url(r'^(?P<post_id>\d+)/addnewcomments/$', 'blog.views.addnewcomments', name='addnewcomments'),
+    url(r'^(?P<post_id>\d+)/addcomments_result/$', 'blog.views.addcomments_result', name='addcomments_result'),
+    url(r'^(?P<comments_id>\d+)/rmcomments/$', 'blog.views.rmcomments', name='rmcomments'),
+    url(r'^(?P<blog_id>\d+)/rss/$', RssFeed(), name='rss'),
+    url(r'^upload/$', 'blog.views.upload', name='upload'),
+    url(r'^filepath/$', 'blog.views.filepath', name='filepath'),
 
-
-#    url(r'^(?P<poll_id>\d+)/$', 'blog.views.detail', name='detail'),
-#    url(r'^(?P<poll_id>\d+)/results/$', 'blog.views.results', name='results'),
-#    url(r'^(?P<poll_id>\d+)/vote/$', 'blog.views.vote', name='vote'),
 )

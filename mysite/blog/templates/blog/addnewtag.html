@@ -2,7 +2,7 @@
 
 {% block content %}
 
-<h1>Add a new tag</h1>
+<h2>Add a new tag</h2>
 <form action="{% url 'blog:addtag_result' post_id %}" method="post" >
 {% csrf_token %}
 <input type="text" name="name" /><br>

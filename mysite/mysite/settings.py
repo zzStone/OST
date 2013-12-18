@@ -87,5 +87,17 @@ USE_TZ = True
 STATIC_URL = '/static/'
 
 TEMPLATE_DIRS = (
-    '/home/zzstone/Documents/OST/final/mysite/templates', # Change this to your own directory.
+    os.path.join(BASE_DIR, 'templates' ),
+    # '/home/zzstone/Documents/OST/final/mysite/templates', # Change this to your own directory.
 )
+
+STATIC_URL = '/static/'
+MEDIA_URL = '/media/'
+
+STATIC_ROOT = '/var/www/static/lbcost/'
+MEDIA_ROOT = '/var/www/media/lbcost/'
+
+try: 
+    from local_settings import *
+except:
+    print "Not local!"

@@ -4,7 +4,7 @@
 
 <h2>Blog --- {{ blog.name }}</h2>
 <p>This blog has been viewed {{ blog.view_track }} times.</p>
-<a href="{% url 'blog:addnewpost' blog.id %}">add a new post</a>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a href="{% url 'blog:rmblog' blog.id %}">remvoe this blog</a><br>
+<a href="{% url 'blog:addnewpost' blog.id %}">Add a new post</a>&nbsp;&nbsp;&nbsp;&nbsp;<a href="{% url 'blog:rss' blog.id %}">Turn to RSS</a>&nbsp;&nbsp;&nbsp;&nbsp;<a href="{% url 'blog:rmblog' blog.id %}">Remvoe this blog</a><br>
 
 <h3>Posts in this blog:</h3>
 {% if postlist %}
@@ -12,7 +12,7 @@
 {% for post in postlist %}
     <li>
     	<h3>{{ post.title }}</h3>
-    	<p>Post Body:&nbsp;&nbsp;&nbsp;&nbsp;{{ post.body|slice:":500" }}<a href="{% url 'blog:posts' post.id %}">...more details</a></p>
+    	<p>Post Body:&nbsp;&nbsp;&nbsp;&nbsp;{{ post.body|safe|slice:":500"|linebreaks }}<a href="{% url 'blog:posts' post.id %}">...more details</a></p>
     </li><br>
 {% endfor %}
 </ul>

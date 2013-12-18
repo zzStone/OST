@@ -4,10 +4,11 @@
 
 <h2>{{ post.title }}</h2>
 <p>This post has been viewed {{ post.view_track }} times.</p>
-<a href="{% url 'blog:blogs' post.blog.id 0 %}">Return to the blog</a>&nbsp;&nbsp;&nbsp;&nbsp;
 <a href="{% url 'blog:addnewtag' post.id %}">Add a new tag</a>&nbsp;&nbsp;&nbsp;&nbsp;
 <a href="{% url 'blog:editpost' post.id %}">Edit this post</a>&nbsp;&nbsp;&nbsp;&nbsp;
-<a href="{% url 'blog:rmpost' post.id %}">Remvoe this post</a>&nbsp;&nbsp;&nbsp;&nbsp;
+<a href="{% url 'blog:rmpost' post.id %}">Remvoe this post</a>&nbsp;&nbsp;&nbsp;&nbsp;<br>
+<a href="{% url 'blog:blogs' post.blog.id 0 %}">Return to the blog</a>&nbsp;&nbsp;&nbsp;&nbsp;
+<a href="{% url 'blog:addnewcomments' post.id %}">Add comments to this post</a>&nbsp;&nbsp;&nbsp;&nbsp;
 
 <h3>tags of this post:</h3>
 {% if post.tag_set.all %}
@@ -18,11 +19,25 @@
     <p>No tags are available.</p>
 {% endif %}
 
-{% if post.body %}
 <h3>body of this post:</h3>
+{% if post.body %}
 {{ post.body|safe|linebreaks }}
 {% else %}
     <p>Body is null.</p>
+{% endif %}
+
+<h3>comments of this post:</h3>
+{% if post.comments_set.all %}
+{% for comments in post.comments_set.all %}
+<ul>
+    <li>{{ comments.body|linebreaks }}
+    <p>post by {{ comments.editor }} at {{ comments.pub_date }}</p>
+    <a href="{% url 'blog:rmcomments' comments.id %}">remove this comments</a>
+    </li>
+</ul>
+{% endfor %}
+{% else %}
+    <p>No comments are available.</p>
 {% endif %}
 
 {% endblock %}

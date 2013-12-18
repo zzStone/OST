@@ -1,4 +1,4 @@
-from django.shortcuts import render, get_object_or_404
+from django.shortcuts import render, get_object_or_404, render_to_response
 from django.http import HttpResponseRedirect, HttpResponse
 #from django.template import RequestContext, loader
 from django.core.urlresolvers import reverse
@@ -10,6 +10,7 @@ from blog.models import Blog, Post, Tag, Comments
 from django.utils import timezone
 import re
 from xml.sax.saxutils import unescape
+from .forms import UploadFileForm
 
 def index(request):
     most_popular_blog = Blog.objects.order_by('-view_track')[:5]
@@ -166,6 +167,9 @@ def addpost_result(request):
     body = request.POST['body']
     body = re.sub(r'(http://\S+)', r'<a href="\1">\1</a>', body)
     body = re.sub(r'(https://\S+)', r'<a href="\1">\1</a>', body)
+    body = re.sub(r'<a href=("\S+\.jpg")\S+</a>', r'<img src=\1>', body)
+    body = re.sub(r'<a href=("\S+\.png")\S+</a>', r'<img src=\1>', body)
+    body = re.sub(r'<a href=("\S+\.gif")\S+</a>', r'<img src=\1>', body)
     blogID = request.POST['blogID']
     b = Blog.objects.get(pk = blogID)
     p = b.post_set.create(title=title, body=body, pub_date=timezone.now(), mod_date=timezone.now(), view_track=0)
@@ -207,6 +211,10 @@ def editpost(request, post_id):
     body = str(p.body)
     body = re.sub(r'<a href="(http://\S+)"\S+</a>', r'\1', body)
     body = re.sub(r'<a href="(https://\S+)"\S+</a>', r'\1', body)
+    body = re.sub(r'<img src="(http://\S+)">', r'\1', body)
+    body = re.sub(r'<img src="(https://\S+)">', r'\1', body)
+    # body = re.sub(r'<a href="(https://\S+)"\S+</a>', r'\1', body)
+    # body = re.sub(r'<a href="(https://\S+)"\S+</a>', r'\1', body)
     if request.user.id == p.blog.user.id:
         return render(request, 'blog/editpost.html', {'post': p, 'body': body})
     else:
@@ -217,6 +225,9 @@ def editpost_result(request):
     body = request.POST['body']
     body = re.sub(r'(http://\S+)', r'<a href="\1">\1</a>', body)
     body = re.sub(r'(https://\S+)', r'<a href="\1">\1</a>', body)
+    body = re.sub(r'<a href=("\S+\.jpg")\S+</a>', r'<img src=\1>', body)
+    body = re.sub(r'<a href=("\S+\.png")\S+</a>', r'<img src=\1>', body)
+    body = re.sub(r'<a href=("\S+\.gif")\S+</a>', r'<img src=\1>', body)
     postID = request.POST['postID']
     p = Post.objects.get(pk = postID)
     p.mod_date = timezone.now()
@@ -224,3 +235,91 @@ def editpost_result(request):
     p.body = body
     p.save()
     return render(request, 'blog/editpost_result.html', {'post': p})
+
+def addnewcomments(request, post_id):
+    if request.user.is_authenticated():
+        return render(request, 'blog/addnewcomments.html', {'post_id': post_id})
+    else:
+        return render(request, 'blog/login.html')
+
+def addcomments_result(request, post_id):
+    editor = request.user.username
+    body = request.POST['body']
+    postID = request.POST['postID']
+    p = Post.objects.get(pk = postID)
+    t = p.comments_set.create(editor=editor, body=body, pub_date=timezone.now())
+    return render(request, 'blog/addcomments_result.html', {'post_id':postID})
+
+def rmcomments(request, comments_id):
+    c = Comments.objects.get(id = comments_id)
+    if request.user.id == c.post.blog.user.id:
+        c.delete()
+        return HttpResponse("Comments have been removed.  Please click back button.")
+    else:
+        if request.user.username == c.editor:
+            c.delete()
+            return HttpResponse("Comments have been removed.  Please click back button.")
+        else:
+            return HttpResponse("You are not Allowed to do that.  Please go back and modify your own blog.")
+
+# Imaginary function to handle an uploaded file.
+# from somewhere import handle_uploaded_file
+
+
+
+
+import uuid
+import random
+import os
+import datetime
+import cgi
+from django.core.files.storage import default_storage
+
+
+def get_hashed_directories():
+    directory = hex(random.randint(1, 15)).lstrip('0x')
+    subdirectory = hex(random.randint(1, 31)).lstrip('0x')
+    return directory, subdirectory
+
+def generate_file_path(filename):
+
+    random_name = uuid.uuid4().hex
+    directory, subdirectory = get_hashed_directories()
+    extension = os.path.splitext(filename)[-1]
+    fn = random_name + extension
+    return os.path.join(directory, subdirectory, fn)
+
+def handle_uploaded_file(f, filename=None):
+    path = None
+    if hasattr(f, 'name'):
+        path = generate_file_path(f.name)
+        default_storage.save(path, f)
+    elif not hasattr(f, 'name') and filename:
+        path = generate_file_path(filename)
+        default_storage.save(path, ContentFile(f))
+    assert path is not None
+    return path
+
+def filepath(request, path):
+    return render(request, 'blog/filepath.html', {'path': path})
+
+
+
+
+def upload(request):
+    if request.method == 'POST':
+        form = UploadFileForm(request.POST, request.FILES)
+        if form.is_valid():
+            path = handle_uploaded_file(request.FILES['file'])
+            return render(request, 'blog/filepath.html', {'path': path})
+    else:
+        form = UploadFileForm()
+    return render(request, 'blog/upload.html', {'form': form})
+
+# def upload_image_view(request, blog_id=None):
+#     data_dict = {}
+#     form = UploadFileForm()
+#     data_dict['form'] = form
+#     data_dict['blog_id'] = blog_id
+#     return render(request, 'upload_image.html', data_dict)
+
